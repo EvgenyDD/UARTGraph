@@ -23,5 +23,4 @@ SOURCES += \
     plot.cpp \
     mainwindow.cpp
 
-FORMS += \
-    mainwindow.ui
+FORMS +=
