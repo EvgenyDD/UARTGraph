@@ -14,6 +14,10 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QRadioButton>
+#include <QSpinBox>
+
+#include <QTimer>
 
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
@@ -47,8 +51,10 @@ public Q_SLOTS:
     void serialDataSend();
     void serialErrorHandler(QSerialPort::SerialPortError error);
 
-    void printTrace(const QByteArray &data);
-    void RecToFile(QPointF point);
+    void onUpdateOnTime(bool state);
+
+
+    //void RecToFile(QPointF point);
 
     // Toolbar buttons click
     void openPortButtonClick();
@@ -74,7 +80,7 @@ private:
 
     QPlainTextEdit *textEdit, *textSend;
 
-    QCheckBox *checkSendN, *checksendL;
+    QCheckBox *checkSendN, *checkSendL;
 
     QAction *aboutqtAct;
     QAction *aboutAct;
@@ -83,12 +89,19 @@ private:
     QComboBox *portBox;
     QStatusBar *statusBar;
     Plot *plot;
+    QHBoxLayout *subPlotHLayout;
+    QRadioButton *plotMode[3];
+    QSpinBox *intervalBox;
+    QCheckBox *updateOnTime;
+
 
     QGridLayout *GridLayoutLeft;
     QVBoxLayout *VLayoutRight;
     QHBoxLayout *HLayout;
 
     QByteArray dataArray;
+
+    QTimer *dumbTimer;
 };
 
 #endif // MAINWINDOW_H

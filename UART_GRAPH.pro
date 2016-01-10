@@ -9,7 +9,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     include($$QTSERIALPORT_PROJECT_ROOT/src/serialport/qt4support/serialport.prf)
 }
 
-TARGET       = QWTTemplate_Clean
+TARGET       = UART_Graph
 
 include(C:/Qt/QWT/qwt.pri)
 
@@ -19,7 +19,6 @@ HEADERS += curvedata.h \
 
 SOURCES += \
     main.cpp \
-    curvedata.cpp \
     plot.cpp \
     mainwindow.cpp
 

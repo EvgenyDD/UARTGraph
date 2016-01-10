@@ -6,6 +6,7 @@
 #include <QString>
 
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -30,16 +31,19 @@ MainWindow::MainWindow(QWidget *parent) :
             this,   SLOT(serialErrorHandler(QSerialPort::SerialPortError)));
 
     connect(sendButton, SIGNAL(clicked()), this, SLOT(serialDataSend()));
+
+    dumbTimer = new QTimer();
+    dumbTimer->setInterval(20);
+    connect(dumbTimer, SIGNAL(timeout()), this, SLOT(serialDataReceive()));
+    dumbTimer->start();
+     plot->start();
 }
 
 
 MainWindow::~MainWindow()
 {
-    /*if (this->enumerator && this->enumerator->isEnabled())
-            this->enumerator->setEnabled(false);*/
-
-    /*if (this->serial && this->serial->isOpen())
-        this->serial->close();*/
+    if (this->serial && this->serial->isOpen())
+        this->serial->close();
 
     delete ui;
 }
@@ -67,8 +71,6 @@ void MainWindow::changeEvent(QEvent *e)
 /* Private SLOTS section */
 void MainWindow::procEnumerate(/*const QStringList &l*/)
 {
-    qDebug() << "procEnumerate()";
-
     // Fill ports box.
     portBox->clear();
 
@@ -142,56 +144,181 @@ void MainWindow::procSerialMessages(const QString &msg, QDateTime dt)
 
 void MainWindow::serialDataReceive()
 {
+    //static int fuck = 0;
+    //fuck += qrand()%10-5;
 
-    /*
-     *     QByteArray temp_data = serial->readLine(); // Заполняем массив данными
-    if (temp_data.indexOf("\n") != -1) {
-        // Получили переход на новую строку - значит приняли данные
-        bytes += temp_data;
 
-        // Грязная магия - парсим данные. Делим массив на две части: до пробела (команда) и после (параметры)
-        // Затем очищаем параметры от \r\n, и преобразуем в unsigned int
-        uint adc_value = bytes.split(' ').at(1).split('\r').at(0).toUInt();
+    //if((int)(elapsed)%10 > 5) return;
 
-        // Преобразуем данные АЦП в миливольты.
-        // А за тем uint преобразовывается в строку, которую отображаем в тестовом поле leADC
-        ui->leADC->setText(QString::number(adc_value / 1.365));
-        bytes.clear();
-    } else {
-        bytes += temp_data;
-    }
-*/
-    qDebug()<<"procSerialDataReceive"<<" receiving";
+   /* QPointF point(elapsed, fuck);
+    QPointF point2(elapsed, fuck*2);*/
+//qDebug() << "Point X:" << point.x() << " Y:" << point.y();
+    //plot->appendPoint(point,point2);
+static bool isEn = true;
 
     if (this->serial && this->serial->isOpen())
     {
-        QByteArray byte = this->serial->readAll();
-        qDebug()<<byte;
 
-        qDebug()<<"1";
-        this->printTrace(byte);
-qDebug()<<"2";
+        if(isEn == false)
+        {
+            plot->start();
+            isEn = true;
+        }
+        double elapsed = plot->d_clock.elapsed()/1000.0;
 
+        QByteArray Rx = this->serial->readAll();
+        //textEdit->insertPlainText(Rx);
+
+
+        //qDebug() << " ++"<< Rx.size()<< "  ... "<<Rx;
+
+        /* Check if string contains Start, Middle, Stop symbols */
+        bool flagA=false, flagB=false, flagC=false;
+        for(int i=0; i<Rx.size(); i++)
+           if(Rx.at(i)=='A') flagA = true;
+        for(int i=0; i<Rx.size(); i++)
+           if(Rx.at(i)=='B') flagB = true;
+        for(int i=0; i<Rx.size(); i++)
+           if(Rx.at(i)=='C') flagC = true;
+
+        if(!flagA || !flagB || !flagC) return;
+
+        /* parser */
+        int ptr = 0, ptr1=0, ptr2=0;
+        char pos[10], pwm[10];
+        /* Find Start symbol */
+        for(; (Rx.at(ptr) != 'A') && (ptr<=Rx.size()); ptr++){}
+        ptr++;
+
+        /* Find Middle symbol & copy 1st num */
+        for(; Rx.at(ptr) != 'B'; ptr++, ptr1++)
+            pos[ptr1] = Rx.at(ptr);
+        pos[ptr1] = '\0';
+
+        ptr++;
+        /* Find Stop Mark symbol & copy 2nd num */
+        for(; Rx.at(ptr) != 'C'; ptr++, ptr2++)
+            pwm[ptr2] = Rx.at(ptr);
+        pwm[ptr2] = '\0';
+
+       /* QString a = "";
+        a.append("POSITION = ");
+        a.append(pos);
+        a.append(", PWM = ");
+        a.append(pwm);
+        a.append('\n');
+
+        textEdit->insertPlainText(a);*/
+        QString a = pos, b = pwm;
+        int aa = a.toInt(), bb=b.toInt();
+
+        static bool pause = false;
+        if(abs(aa)>500)
+        {
+            //plot->stop();
+            plot->flagUpd=false;
+            pause = true;
+            return;
+        }
+        else
+        {
+            if(pause)
+            {
+                pause = false;
+                plot->flagUpd=true;
+                //plot->start();
+            }
+        }
+        //qDebug() << "---"<<aa<<"   "<<bb;
+        QPointF point(elapsed, aa);
+        QPointF point2(elapsed, bb/2);
+        plot->appendPoint(point,point2);
+   // int val =
+
+    }
+    else
+    {
+        if(isEn == true)
+        {
+            plot->stop();
+            isEn = false;
+        }
+    }
+#if 0
+#define END_S '\n'
+
+        if(Rx.indexOf("\n") != -1)
+        {
+            // Получили переход на новую строку - значит приняли данные
+            dataArray += Rx;
+
+            // Грязная магия - парсим данные. Делим массив на две части: до пробела (команда) и после (параметры)
+            // Затем очищаем параметры от \r\n, и преобразуем в unsigned int
+            uint adc_value = 0;//dataArray.split(' ').at(1).split('\r').at(0).toUInt();
+
+            //ui->leADC->setText(QString::number(adc_value));
+
+                // Print parsed number
+                {
+                    QString string;
+
+                    QString alertHtml = "<font color=\"DeepPink\">";
+                    QString notifyHtml = "<font color=\"Lime\">";
+                    QString infoHtml = "<font color=\"Aqua\">";
+                    QString endHtml = "</font><br>";
+
+                    string.append(alertHtml);
+                    QString time = QTime::currentTime().toString();
+                    string.append(time);
+                    string.append(": ");
+                    string.append(QString::number(adc_value));
+                    string.append(endHtml);
+
+                    textEdit->appendHtml(string);
+                }
+
+            dataArray.clear();
+        }
+        else
+        {
+            dataArray += Rx;
+        }
+
+        static int fuck = 0;
+        fuck += qrand()%100-50.0;
+
+        double elapsed = plot->dclock_elapsed();
+        QPointF point(elapsed, fuck);
+qDebug() << "Point X:" << point.x() << " Y:" << point.y();
+        plot->appendPoint(point);
+        //plot->setIntervalLength(plot->dclock_elapsed()/1000.0);
+
+
+#if 0
         if(byte.at(0) != '\n')
         {
             dataArray.append(byte);
-            qDebug()<<"3";
 
-            double elapsed = (plot->dclock_elapsed())/ 1000.0;
+            qDebug() << "3";
+
+          /*  double elapsed = (plot->dclock_elapsed())/ 1000.0;
             QPointF point(elapsed, 9);
             plot->appendPoint(point);
             QPointF point2(elapsed, 15);
             plot->appendPoint(point2);
-            plot->setIntervalLength(plot->dclock_elapsed()/1000.0);
+            plot->setIntervalLength(plot->dclock_elapsed()/1000.0);*/
         }
         else
         {
-            qDebug()<<"4 "<<dataArray.size();
-            if(dataArray.size()==0) return;
+            qDebug() << "4 size = " << dataArray.size();
 
+            if(dataArray.size() == 0) return;
+
+//#if 0
             if(dataArray.at(0)=='C')
             {
-                qDebug()<<"5";
+                qDebug() << "5";
+
                 if(dataArray.at(3) == '3')
                 {
                    double elapsed = (plot -> dclock_elapsed())/ 1000.0;
@@ -212,13 +339,16 @@ qDebug()<<"2";
                    RecToFile(point);
                 }
             }
+//#endif
 
             dataArray = 0;
          }
+#endif
     }
+#endif
 }
 
-
+#if 0
 void MainWindow::RecToFile(QPointF point)
 {
     qDebug() << "RecToFile ...recording";
@@ -236,25 +366,15 @@ void MainWindow::RecToFile(QPointF point)
     }
     */
 }
-
-
-void MainWindow::printTrace(const QByteArray &data)
-{
-    //textEdit->setTextColor((directionRx) ? Qt::darkBlue : Qt::darkGreen);
-    textEdit->insertPlainText(QString(data));
-
-    QScrollBar *bar = textEdit->verticalScrollBar();
-    bar->setValue(bar->maximum());
-}
-
+#endif
 
 void MainWindow::serialErrorHandler(QSerialPort::SerialPortError error)
 {
     qDebug() << "serial Error: " << serial->errorString();
     if(error == QSerialPort::ResourceError)
     {
-        QMessageBox::critical(this, tr("Critical Error"), serial->errorString());
         openPortButtonClick();
+        QMessageBox::critical(this, tr("Critical Error"), serial->errorString());        
     }
 
     ui->statusBar->showMessage(tr("Error!"));
@@ -266,8 +386,8 @@ void MainWindow::serialDataSend()
     qDebug() << "Data sending...";
     QByteArray data = textSend->toPlainText().toUtf8();
 
-    if(this->checksendL->isChecked()) data.append('\n');
-    if(this->checksendL->isChecked()) data.append('\0');
+    if(this->checkSendL->isChecked()) data.append('\n');
+    if(this->checkSendN->isChecked()) data.append('\0');
 
     QString string;
 
@@ -336,9 +456,21 @@ void MainWindow::createCentralWidget()
 {
     plot = new Plot(this);
 
-    checksendL = new QCheckBox("\\n");
+    subPlotHLayout = new QHBoxLayout();
+    plotMode[0] = new QRadioButton("All");
+    plotMode[0]->setChecked(true);
+    plotMode[1] = new QRadioButton("Smooth");
+    plotMode[2] = new QRadioButton("Frame");
+    intervalBox = new QSpinBox();
+    intervalBox->setMaximum(120);
+    intervalBox->setMinimum(2);
+    intervalBox->setValue(10);
+    updateOnTime = new QCheckBox("TimeUpdate");
+    updateOnTime->setChecked(true);
+
+    checkSendL = new QCheckBox("\\n");
     checkSendN = new QCheckBox("\\0");
-    checksendL->setFixedWidth(30);
+    checkSendL->setFixedWidth(30);
     checkSendN->setFixedWidth(30);
 
     textSend = new QPlainTextEdit;
@@ -356,8 +488,13 @@ void MainWindow::createCentralWidget()
 
     VLayoutRight = new QVBoxLayout();
     VLayoutRight->addWidget(plot);
+    for(int i=0; i<3; i++)
+        subPlotHLayout->addWidget(plotMode[i]);
+    subPlotHLayout->addWidget(intervalBox);
+    subPlotHLayout->addWidget(updateOnTime);
+    VLayoutRight->addLayout(subPlotHLayout);
 
-    GridLayoutLeft->addWidget(checksendL, 0,1);
+    GridLayoutLeft->addWidget(checkSendL, 0,1);
     GridLayoutLeft->addWidget(checkSendN, 0,2);
     GridLayoutLeft->addWidget(textSend, 0,0);
     GridLayoutLeft->addWidget(sendButton, 1,0, 1,3);
@@ -370,6 +507,12 @@ void MainWindow::createCentralWidget()
     setWindowTitle(tr("UART Terminal & Graph"));
 
     this->resize(800,400);
+    connect(plotMode[0], SIGNAL(pressed()), plot, SLOT(setScaleMode()));
+    connect(plotMode[1], SIGNAL(pressed()), plot, SLOT(setScaleMode()));
+    connect(plotMode[2], SIGNAL(pressed()), plot, SLOT(setScaleMode()));
+    connect(intervalBox, SIGNAL(valueChanged(int)), plot, SLOT(intervalChanged(int)));
+    connect(updateOnTime, SIGNAL(clicked(bool)), plot, SLOT(onUpdateOnTime(bool)));
+    connect(updateOnTime, SIGNAL(clicked(bool)), this, SLOT(onUpdateOnTime(bool)));
 }
 
 
@@ -382,12 +525,21 @@ void MainWindow::createToolBars()
 
     ui->mainToolBar->addWidget(portBox);
     ui->mainToolBar->addAction(controlButton);
-
 }
 
 
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Application"),
-        tr("<b>QSerialDevice and QWT for HabraHabr</b> - example of simple terminal<p> Created by Alex Alexeev. 2011"));
+        tr("<b>Serial terminal & Graph</b>"));
+}
+
+
+void MainWindow::onUpdateOnTime(bool state)
+{
+    if(!state && plotMode[2]->isChecked())
+    {
+        plotMode[0]->setChecked(true);
+        emit plotMode[0]->pressed();
+    }
 }

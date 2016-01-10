@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[16];
-    char stringdata[162];
+    QByteArrayData data[15];
+    char stringdata[186];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,25 +32,24 @@ static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
 QT_MOC_LITERAL(0, 0, 10),
 QT_MOC_LITERAL(1, 11, 13),
 QT_MOC_LITERAL(2, 25, 0),
-QT_MOC_LITERAL(3, 26, 1),
-QT_MOC_LITERAL(4, 28, 19),
-QT_MOC_LITERAL(5, 48, 4),
-QT_MOC_LITERAL(6, 53, 18),
-QT_MOC_LITERAL(7, 72, 3),
-QT_MOC_LITERAL(8, 76, 2),
-QT_MOC_LITERAL(9, 79, 21),
-QT_MOC_LITERAL(10, 101, 10),
-QT_MOC_LITERAL(11, 112, 4),
-QT_MOC_LITERAL(12, 117, 9),
-QT_MOC_LITERAL(13, 127, 5),
-QT_MOC_LITERAL(14, 133, 22),
-QT_MOC_LITERAL(15, 156, 5)
+QT_MOC_LITERAL(3, 26, 18),
+QT_MOC_LITERAL(4, 45, 3),
+QT_MOC_LITERAL(5, 49, 2),
+QT_MOC_LITERAL(6, 52, 17),
+QT_MOC_LITERAL(7, 70, 14),
+QT_MOC_LITERAL(8, 85, 18),
+QT_MOC_LITERAL(9, 104, 28),
+QT_MOC_LITERAL(10, 133, 5),
+QT_MOC_LITERAL(11, 139, 14),
+QT_MOC_LITERAL(12, 154, 5),
+QT_MOC_LITERAL(13, 160, 19),
+QT_MOC_LITERAL(14, 180, 5)
     },
-    "MainWindow\0procEnumerate\0\0l\0"
-    "slotPrintAllDevices\0list\0procSerialMessages\0"
-    "msg\0dt\0procSerialDataReceive\0printTrace\0"
-    "data\0RecToFile\0point\0procControlButtonClick\0"
-    "about"
+    "MainWindow\0procEnumerate\0\0procSerialMessages\0"
+    "msg\0dt\0serialDataReceive\0serialDataSend\0"
+    "serialErrorHandler\0QSerialPort::SerialPortError\0"
+    "error\0onUpdateOnTime\0state\0"
+    "openPortButtonClick\0about"
 };
 #undef QT_MOC_LITERAL
 
@@ -68,22 +67,22 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   54,    2, 0x0a /* Public */,
-       4,    1,   57,    2, 0x0a /* Public */,
-       6,    2,   60,    2, 0x0a /* Public */,
-       9,    0,   65,    2, 0x0a /* Public */,
-      10,    1,   66,    2, 0x0a /* Public */,
-      12,    1,   69,    2, 0x0a /* Public */,
-      14,    0,   72,    2, 0x0a /* Public */,
-      15,    0,   73,    2, 0x0a /* Public */,
+       1,    0,   54,    2, 0x0a /* Public */,
+       3,    2,   55,    2, 0x0a /* Public */,
+       6,    0,   60,    2, 0x0a /* Public */,
+       7,    0,   61,    2, 0x0a /* Public */,
+       8,    1,   62,    2, 0x0a /* Public */,
+      11,    1,   65,    2, 0x0a /* Public */,
+      13,    0,   68,    2, 0x0a /* Public */,
+      14,    0,   69,    2, 0x0a /* Public */,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::QStringList,    3,
-    QMetaType::Void, QMetaType::QStringList,    5,
-    QMetaType::Void, QMetaType::QString, QMetaType::QDateTime,    7,    8,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QByteArray,   11,
-    QMetaType::Void, QMetaType::QPointF,   13,
+    QMetaType::Void, QMetaType::QString, QMetaType::QDateTime,    4,    5,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 9,   10,
+    QMetaType::Void, QMetaType::Bool,   12,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -95,13 +94,13 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
     if (_c == QMetaObject::InvokeMetaMethod) {
         MainWindow *_t = static_cast<MainWindow *>(_o);
         switch (_id) {
-        case 0: _t->procEnumerate((*reinterpret_cast< const QStringList(*)>(_a[1]))); break;
-        case 1: _t->slotPrintAllDevices((*reinterpret_cast< const QStringList(*)>(_a[1]))); break;
-        case 2: _t->procSerialMessages((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< QDateTime(*)>(_a[2]))); break;
-        case 3: _t->procSerialDataReceive(); break;
-        case 4: _t->printTrace((*reinterpret_cast< const QByteArray(*)>(_a[1]))); break;
-        case 5: _t->RecToFile((*reinterpret_cast< QPointF(*)>(_a[1]))); break;
-        case 6: _t->procControlButtonClick(); break;
+        case 0: _t->procEnumerate(); break;
+        case 1: _t->procSerialMessages((*reinterpret_cast< const QString(*)>(_a[1])),(*reinterpret_cast< QDateTime(*)>(_a[2]))); break;
+        case 2: _t->serialDataReceive(); break;
+        case 3: _t->serialDataSend(); break;
+        case 4: _t->serialErrorHandler((*reinterpret_cast< QSerialPort::SerialPortError(*)>(_a[1]))); break;
+        case 5: _t->onUpdateOnTime((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 6: _t->openPortButtonClick(); break;
         case 7: _t->about(); break;
         default: ;
         }

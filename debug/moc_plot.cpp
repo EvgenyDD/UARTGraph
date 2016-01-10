@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Plot_t {
-    QByteArrayData data[6];
-    char stringdata[57];
+    QByteArrayData data[11];
+    char stringdata[104];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -30,14 +30,20 @@ struct qt_meta_stringdata_Plot_t {
 static const qt_meta_stringdata_Plot_t qt_meta_stringdata_Plot = {
     {
 QT_MOC_LITERAL(0, 0, 4),
-QT_MOC_LITERAL(1, 5, 17),
-QT_MOC_LITERAL(2, 23, 0),
-QT_MOC_LITERAL(3, 24, 11),
-QT_MOC_LITERAL(4, 36, 5),
-QT_MOC_LITERAL(5, 42, 14)
+QT_MOC_LITERAL(1, 5, 15),
+QT_MOC_LITERAL(2, 21, 0),
+QT_MOC_LITERAL(3, 22, 3),
+QT_MOC_LITERAL(4, 26, 17),
+QT_MOC_LITERAL(5, 44, 11),
+QT_MOC_LITERAL(6, 56, 5),
+QT_MOC_LITERAL(7, 62, 6),
+QT_MOC_LITERAL(8, 69, 6),
+QT_MOC_LITERAL(9, 76, 12),
+QT_MOC_LITERAL(10, 89, 14)
     },
-    "Plot\0setIntervalLength\0\0appendPoint\0"
-    "point\0dclock_elapsed"
+    "Plot\0intervalChanged\0\0val\0setIntervalLength\0"
+    "appendPoint\0point\0point1\0point2\0"
+    "setScaleMode\0onUpdateOnTime"
 };
 #undef QT_MOC_LITERAL
 
@@ -47,7 +53,7 @@ static const uint qt_meta_data_Plot[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -55,14 +61,20 @@ static const uint qt_meta_data_Plot[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   29,    2, 0x0a /* Public */,
-       3,    1,   32,    2, 0x0a /* Public */,
-       5,    0,   35,    2, 0x0a /* Public */,
+       1,    1,   44,    2, 0x0a /* Public */,
+       4,    1,   47,    2, 0x0a /* Public */,
+       5,    1,   50,    2, 0x0a /* Public */,
+       5,    2,   53,    2, 0x0a /* Public */,
+       9,    0,   58,    2, 0x0a /* Public */,
+      10,    1,   59,    2, 0x0a /* Public */,
 
  // slots: parameters
+    QMetaType::Void, QMetaType::Int,    3,
     QMetaType::Void, QMetaType::Double,    2,
-    QMetaType::Void, QMetaType::QPointF,    4,
-    QMetaType::Double,
+    QMetaType::Void, QMetaType::QPointF,    6,
+    QMetaType::Void, QMetaType::QPointF, QMetaType::QPointF,    7,    8,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,    2,
 
        0        // eod
 };
@@ -72,10 +84,12 @@ void Plot::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
     if (_c == QMetaObject::InvokeMetaMethod) {
         Plot *_t = static_cast<Plot *>(_o);
         switch (_id) {
-        case 0: _t->setIntervalLength((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 1: _t->appendPoint((*reinterpret_cast< QPointF(*)>(_a[1]))); break;
-        case 2: { double _r = _t->dclock_elapsed();
-            if (_a[0]) *reinterpret_cast< double*>(_a[0]) = _r; }  break;
+        case 0: _t->intervalChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: _t->setIntervalLength((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 2: _t->appendPoint((*reinterpret_cast< QPointF(*)>(_a[1]))); break;
+        case 3: _t->appendPoint((*reinterpret_cast< QPointF(*)>(_a[1])),(*reinterpret_cast< QPointF(*)>(_a[2]))); break;
+        case 4: _t->setScaleMode(); break;
+        case 5: _t->onUpdateOnTime((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -106,13 +120,13 @@ int Plot::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 6;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 6)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 3;
+        _id -= 6;
     }
     return _id;
 }

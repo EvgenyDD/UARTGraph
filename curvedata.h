@@ -14,9 +14,7 @@
 class CurveData: public QwtArraySeriesData<QPointF>
 {
 public:
-    CurveData()
-    {
-    }
+    CurveData(){}
 
     virtual QRectF boundingRect() const
     {
@@ -44,16 +42,16 @@ public:
         d_samples.clear();
 
         int index;
-        for ( index = values.size() - 1; index >= 0; index-- )
+        for(index = values.size() - 1; index >= 0; index-- )
         {
-            if ( values[index].x() < limit )
+            if(values[index].x() < limit)
                 break;
         }
 
         if ( index > 0 )
             d_samples += (values[index++]);
 
-        while (index < values.size() - 1)
+        while(index < values.size() - 1)
             d_samples += (values[index++]);
 
         d_boundingRect = QRectF( 0.0, 0.0, -1.0, -1.0 );
